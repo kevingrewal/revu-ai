@@ -1,1 +1,1 @@
-# revu-ai
+# Revu AI
