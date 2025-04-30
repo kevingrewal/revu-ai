@@ -1,63 +1,88 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Animated,
+} from "react-native";
+import { useFonts } from "expo-font";
 
-export default function Index() {
+export default function HomePage() {
+  const [loading, setLoading] = useState(true);
+  const [fadeAnim] = useState(new Animated.Value(0));
+
+  const [fontsLoaded] = useFonts({
+    Avignon: require("../assets/fonts/Avignon.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      // Simulate load delay
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    }
+  }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!loading && fontsLoaded) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [loading, fontsLoaded]);
+
+  if (loading || !fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.title}>
+          <Text style={styles.logoLetter}>R</Text>evu AI
+        </Text>
+        <ActivityIndicator size="large" color="#00E0FF" style={styles.spinner} />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Revu AI</Text>
-      <Text style={styles.tagline}>Smarter reviews. Better decisions.</Text>
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.buttonOutline}>
-        <Text style={styles.buttonOutlineText}>Log In</Text>
-      </TouchableOpacity>
-    </View>
+    <Animated.View style={[styles.homeContainer, { opacity: fadeAnim }]}> 
+      <Text style={styles.loadedText}>Welcome to Revu AI</Text>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#0A0F0F",
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    backgroundColor: "#121212",
   },
   title: {
     fontSize: 40,
+    fontFamily: "Avignon",
+    color: "#E0E0E0",
+    textAlign: "center",
+  },
+  logoLetter: {
+    fontSize: 60,
+    color: "#00E0FF",
     fontWeight: "bold",
-    color: "#4EF8B0",
-    marginBottom: 8,
+    marginRight: 5,
   },
-  tagline: {
-    fontSize: 16,
-    color: "#CFCFCF",
-    marginBottom: 48,
+  spinner: {
+    marginTop: 20,
   },
-  button: {
-    backgroundColor: "#4EF8B0",
-    paddingVertical: 14,
-    paddingHorizontal: 36,
-    borderRadius: 12,
-    marginBottom: 16,
+  homeContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
   },
-  buttonText: {
-    color: "#0A0F0F",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  buttonOutline: {
-    borderColor: "#4EF8B0",
-    borderWidth: 2,
-    paddingVertical: 14,
-    paddingHorizontal: 36,
-    borderRadius: 12,
-  },
-  buttonOutlineText: {
-    color: "#4EF8B0",
-    fontSize: 18,
-    fontWeight: "bold",
+  loadedText: {
+    fontSize: 24,
+    color: "#00E0FF",
   },
 });
