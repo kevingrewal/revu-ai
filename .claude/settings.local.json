@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(brew install:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(PYTHONPATH=/Users/shroom/Desktop/Personal_Projects/REVU-AI/backend python:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(gt:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
