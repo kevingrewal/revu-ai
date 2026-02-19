@@ -7,6 +7,7 @@ interface UseProductsParams {
   limit?: number;
   category?: string;
   sort?: 'rating_desc' | 'rating_asc' | 'price_asc' | 'price_desc' | 'newest';
+  search?: string;
 }
 
 export const useProducts = (params: UseProductsParams = {}) => {
@@ -19,6 +20,7 @@ export const useProducts = (params: UseProductsParams = {}) => {
       if (params.limit) queryParams.append('limit', params.limit.toString());
       if (params.category) queryParams.append('category', params.category);
       if (params.sort) queryParams.append('sort', params.sort);
+      if (params.search) queryParams.append('q', params.search);
 
       const response = await api.get<ProductListResponse>(
         `/products?${queryParams.toString()}`
