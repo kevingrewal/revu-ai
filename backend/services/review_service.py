@@ -102,7 +102,7 @@ def fetch_reviews_for_product(product):
     product.reviews_fetched_at = datetime.utcnow()
     db.session.flush()
 
-    all_reviews = Review.query.filter_by(product_id=product.id).all()
+    all_reviews = Review.query.filter_by(product_id=product.id, source="amazon").all()
     product.review_count = len(all_reviews)
 
     if all_reviews:

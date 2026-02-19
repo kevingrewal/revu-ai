@@ -1,5 +1,6 @@
 """AI-powered sentiment analysis and pros/cons extraction using Claude API."""
 import logging
+import anthropic
 from flask import current_app
 
 logger = logging.getLogger(__name__)
@@ -108,8 +109,6 @@ def analyze_reviews_batch(review_texts):
     api_key = current_app.config.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         raise SentimentAnalysisError("ANTHROPIC_API_KEY not configured")
-
-    import anthropic
 
     client = anthropic.Anthropic(api_key=api_key)
     user_prompt = _build_prompt(review_texts)
