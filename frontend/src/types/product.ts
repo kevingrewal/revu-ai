@@ -41,9 +41,3 @@ export interface ProductListResponse {
   limit: number;
   pages: number;
 }
-
-export interface CategoryProductsResponse {
-  category: Category;
-  products: Product[];
-  total: number;
-}
