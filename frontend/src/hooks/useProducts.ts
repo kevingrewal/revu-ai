@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../config/api';
 import type { ProductListResponse } from '../types/product';
 
-interface UseProductsParams {
+export interface UseProductsParams {
   page?: number;
   limit?: number;
   category?: string;
