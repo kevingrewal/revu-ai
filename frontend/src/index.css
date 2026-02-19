@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply scroll-smooth;
+    transition: color 200ms ease, background-color 200ms ease;
+  }
+
   body {
-    @apply min-h-screen bg-gray-50 text-gray-900;
+    @apply min-h-screen bg-surface-secondary dark:bg-dark text-slate-900 dark:text-slate-100 font-sans antialiased;
   }
 }

@@ -1,15 +1,16 @@
-import { ReactNode, ButtonHTMLAttributes } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
 }
 
 const variantStyles = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-  outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
+  primary: 'bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700',
+  secondary: 'bg-slate-100 dark:bg-dark-surface-secondary text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-600',
+  outline: 'border-2 border-brand-500 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950',
+  ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800',
 };
 
 const sizeStyles = {
@@ -27,7 +28,7 @@ export const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      className={`rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`rounded-lg font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {children}

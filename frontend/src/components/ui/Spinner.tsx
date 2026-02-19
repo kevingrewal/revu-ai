@@ -14,7 +14,7 @@ const sizeMap = {
 export const Spinner = ({ size = 'md', className = '' }: SpinnerProps) => {
   return (
     <div className="flex justify-center items-center">
-      <Loader2 className={`${sizeMap[size]} animate-spin text-blue-600 ${className}`} />
+      <Loader2 className={`${sizeMap[size]} animate-spin text-brand-500 dark:text-brand-400 ${className}`} />
     </div>
   );
 };

@@ -14,7 +14,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Card onClick={() => navigate(`/products/${product.id}`)}>
-      <div className="aspect-square w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+      <div className="aspect-[4/3] w-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -22,24 +22,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-gray-400 text-sm">No image</div>
+          <div className="text-slate-400 dark:text-slate-500 text-sm">No image</div>
         )}
       </div>
 
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
-            {product.name}
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug mb-2">
+          {product.name}
+        </h3>
 
         <div className="flex items-center justify-between mb-3">
           <RatingBadge rating={product.rating} size="sm" />
-          <span className="text-xs text-gray-500">{product.review_count} reviews</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">{product.review_count} reviews</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-gray-900">
+          <span className="text-xl font-bold text-slate-900 dark:text-slate-100">
             {formatPrice(product.price)}
           </span>
           {product.category && (

@@ -24,7 +24,7 @@ export const RatingBadge = ({ rating, size = 'md' }: RatingBadgeProps) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full font-semibold ${sizeStyles[size]} ${colorStyles[colorClass as keyof typeof colorStyles]}`}
+      className={`inline-flex items-center gap-1 rounded-full font-semibold hover:scale-105 transition-transform cursor-default ${sizeStyles[size]} ${colorStyles[colorClass as keyof typeof colorStyles]}`}
     >
       <Star className={size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'} />
       {formatRating(rating)}
