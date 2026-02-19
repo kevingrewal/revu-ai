@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from models.category import Category
 from models.product import Product
 from schemas.product_schema import CategoryResponse
@@ -38,6 +38,25 @@ def get_category_products(slug):
             "products": products_data,
             "total": len(products_data),
         }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@categories_bp.route("/search", methods=["GET"])
+def search_categories():
+    """Search categories by name"""
+    try:
+        search = request.args.get("q", "").strip()
+        if not search:
+            return jsonify([]), 200
+
+        search_pattern = f"%{search}%"
+        categories = Category.query.filter(
+            Category.name.like(search_pattern)
+        ).order_by(Category.name).limit(5).all()
+
+        return jsonify([cat.to_dict() for cat in categories]), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
