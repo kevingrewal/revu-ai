@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from models.product import Product
 from models.category import Category
 from schemas.product_schema import ProductResponse, ProductListResponse, ProductDetailResponse
+from utils.database import db
 import math
 
 products_bp = Blueprint("products", __name__, url_prefix="/api/products")
@@ -21,6 +22,7 @@ def get_products():
         limit = max(limit, 1)  # Ensure limit is at least 1
         category = request.args.get("category")
         sort = request.args.get("sort", "rating_desc")
+        search = request.args.get("q", "").strip()
 
         # Build query
         query = Product.query
@@ -28,6 +30,17 @@ def get_products():
         # Filter by category
         if category:
             query = query.filter(Product.category == category)
+
+        # Filter by search query
+        if search:
+            search_pattern = f"%{search}%"
+            query = query.filter(
+                db.or_(
+                    Product.name.like(search_pattern),
+                    Product.description.like(search_pattern),
+                    Product.category.like(search_pattern),
+                )
+            )
 
         # Apply sorting
         if sort == "rating_desc":

@@ -55,3 +55,14 @@ npm run preview            # preview production build
 - Use `gt submit` to push and create/update PRs
 - Use `gt log` to view the stack
 - Only fall back to `git` for operations Graphite doesn't support (e.g., `git init`, `git remote`)
+- **NEVER commit `.claude/commands/` or `.claude/settings.local.json`** — these are local-only files. Always keep them unstaged.
+
+### Branching Strategy
+
+- **`frontend-develop`** — Long-lived development branch for all frontend work. All frontend feature branches should be created off this branch.
+- **`backend-develop`** — Long-lived development branch for all backend work. All backend feature branches should be created off this branch.
+- **`master`** — Stable main branch. `frontend-develop` and `backend-develop` merge into `master` when ready.
+- When creating a new feature branch, always branch off the correct develop branch:
+  - Frontend changes → branch off `frontend-develop`
+  - Backend changes → branch off `backend-develop`
+  - Full-stack changes → coordinate across both develop branches
