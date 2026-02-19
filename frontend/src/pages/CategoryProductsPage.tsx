@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import type { UseProductsParams } from '../hooks/useProducts';
@@ -30,8 +30,12 @@ export const CategoryProductsPage = () => {
   });
 
   // Reset to page 1 when navigating to a different category
+  const prevSlugRef = useRef(slug);
   useEffect(() => {
-    setSearchParams({ page: '1', sort: 'rating_desc' }, { replace: true });
+    if (prevSlugRef.current !== slug) {
+      setSearchParams({ page: '1', sort: 'rating_desc' }, { replace: true });
+      prevSlugRef.current = slug;
+    }
   }, [slug, setSearchParams]);
 
   useEffect(() => {
