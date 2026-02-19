@@ -27,3 +27,6 @@ class Config:
     SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "")
     SERPAPI_MONTHLY_LIMIT = int(os.getenv("SERPAPI_MONTHLY_LIMIT", "250"))
     REVIEW_CACHE_DAYS = int(os.getenv("REVIEW_CACHE_DAYS", "7"))
+
+    # Anthropic Claude API
+    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
