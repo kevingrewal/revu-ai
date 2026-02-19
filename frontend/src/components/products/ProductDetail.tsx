@@ -4,6 +4,7 @@ import { RatingBadge } from './RatingBadge';
 import { ProConsList } from '../reviews/ProConsList';
 import { ReviewList } from '../reviews/ReviewList';
 import { Button } from '../ui/Button';
+import { ChatWidget } from '../chat/ChatWidget';
 import { formatPrice } from '../../utils/formatters';
 
 interface ProductDetailProps {
@@ -92,6 +93,14 @@ export const ProductDetail = ({ product }: ProductDetailProps) => {
           Customer Reviews
         </h2>
         <ReviewList reviews={product.reviews} limit={5} />
+      </div>
+
+      {/* AI Chat */}
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
+          Ask About This Product
+        </h2>
+        <ChatWidget productId={product.id} />
       </div>
     </div>
   );
