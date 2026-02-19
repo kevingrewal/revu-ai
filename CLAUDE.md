@@ -23,6 +23,9 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python app.py              # runs dev server on :5000
+python sync.py             # sync products from Amazon via SerpApi
+python sync.py --clean     # clear DB and re-sync
+python -c "from seed_data.mock_products import seed_database; from app import app; seed_database(app)"  # seed mock data
 ```
 
 ### Frontend
@@ -35,17 +38,104 @@ npm run lint               # eslint .
 npm run preview            # preview production build
 ```
 
-## Backend Configuration
+## Backend Details
 
+### Configuration
 - Copy `backend/.env.example` to `backend/.env` for environment variables
 - Flask runs in debug mode by default (`FLASK_DEBUG=1`)
-- Dependencies: Flask, flask-cors, python-dotenv
+- Database: SQLite at `backend/instance/revu.db` (override with `DATABASE_URL` env var)
+- Dependencies: Flask, Flask-CORS, Flask-SQLAlchemy, SQLAlchemy, Pydantic, Requests, python-dotenv
 
-## Frontend Configuration
+### Environment Variables
+- `SERPAPI_API_KEY` — Required for product sync and review fetching (250 free searches/month)
+- `SERPAPI_MONTHLY_LIMIT` — Monthly API call budget (default: 250)
+- `REVIEW_CACHE_DAYS` — Days before re-fetching reviews (default: 7)
 
-- ESLint configured with TypeScript-ESLint, React Hooks, and React Refresh plugins (`eslint.config.js`)
-- TypeScript strict mode enabled via `tsconfig.app.json`
-- Entry point: `frontend/src/main.tsx` → `App.tsx`
+### Database Models (`backend/models/`)
+- **Product** — id (UUID), name, description, category (FK→Category.slug), price, rating (0-10), review_count, image_url, source_url, bestbuy_sku, amazon_asin, reviews_fetched_at
+- **Review** — id (UUID), product_id (FK→Product.id), source, text, sentiment_score (-1 to 1), source_rating (1-5 stars), pros/cons (JSON stored as text)
+- **Category** — id (UUID), name, slug, product_count
+- **ApiUsage** — id (UUID), api_name, endpoint, product_id, called_at (tracks external API calls for rate limiting)
+
+### API Endpoints (`backend/routes/`)
+
+**Products** (`/api/products`):
+- `GET /api/products` — Paginated list. Params: `page`, `limit` (max 100), `category` (slug), `sort` (rating_desc|rating_asc|price_asc|price_desc|newest)
+- `GET /api/products/<id>` — Product detail with reviews. Triggers on-demand review fetching from SerpApi if product has an amazon_asin
+
+**Categories** (`/api/categories`):
+- `GET /api/categories` — All categories sorted by name
+- `GET /api/categories/<slug>/products` — Products in a category sorted by rating desc
+
+**Health** (`/api/health`):
+- `GET /api/health` — Health check
+- `GET /api/hello` — Hello message
+- `GET /api/api-usage` — SerpApi usage stats
+
+### External API Integrations (`backend/services/`)
+- **SerpApi** (`serpapi_client.py`) — Amazon product search, ASIN lookup, review fetching. Includes rate limiting with 10-call buffer before monthly limit
+- **Best Buy** (`bestbuy_client.py`) — Product search by category/keyword. Integrated but not actively used in any routes yet
+- **Review Service** (`review_service.py`) — Orchestrates review fetching with caching. Checks cache freshness, finds ASIN if missing, fetches/stores reviews, updates product counts
+
+### Data Pipeline
+- `sync.py` — CLI script that populates the DB with products from Amazon via SerpApi. Searches 8 categories with predefined queries, upserts by amazon_asin, converts Amazon 1-5 ratings to 0-10 scale
+- `seed_data/mock_products.py` — Generates 80 mock products (10 per category) with ~700 reviews for development without API calls
+
+### Backend Patterns
+- App factory pattern (`create_app()` in `app.py`)
+- Flask Blueprints for modular route organization
+- Pydantic schemas for response validation (`backend/schemas/`)
+- Service layer separates business logic from routes
+- Review pros/cons stored as JSON text, accessed via `get_pros()`/`set_pros()` helpers
+
+## Frontend Details
+
+### Key Dependencies
+- React 19, React Router 7, TanStack React Query 5, Axios, Framer Motion, Lucide React icons, Tailwind CSS 3.4
+
+### Routing (`frontend/src/App.tsx`)
+```
+/ (Layout wrapper with header/footer)
+├── /                    → Home (product grid sorted by rating)
+├── /products/:id        → ProductDetailPage (full details + reviews)
+├── /categories          → CategoriesPage (category grid)
+├── /categories/:slug    → CategoryProductsPage (products in category)
+└── /*                   → NotFound (404)
+```
+
+### Component Structure (`frontend/src/components/`)
+- `layout/` — Layout, Header (with mobile menu), Footer
+- `products/` — ProductCard, ProductGrid, ProductDetail, ProductCardSkeleton, ProductDetailSkeleton, RatingBadge
+- `categories/` — CategoryCard, CategoryGrid, CategoryCardSkeleton
+- `reviews/` — ReviewCard (expandable, sentiment-colored), ReviewList, ProConsList
+- `ui/` — Badge, Button, Card, Skeleton, ThemeToggle (reusable primitives)
+
+### Data Layer
+- **API client** (`config/api.ts`) — Axios instance, base URL from `VITE_API_URL` env or `http://localhost:5000/api`, 10s timeout
+- **Hooks** (`hooks/`) — `useProducts(page, limit, category, sort)`, `useProduct(id)`, `useCategories()`, `useTheme()`
+- **Types** (`types/product.ts`) — Review, Product, ProductDetail, Category, ProductListResponse
+- React Query: 5-min stale time, 1 retry, no refetch on window focus
+
+### Styling & Theme
+- Tailwind CSS with class-based dark mode
+- Custom colors: `brand` (indigo), `surface` (light backgrounds), `dark` (dark backgrounds), `rating` (green/lime/amber/red)
+- ThemeContext supports light/dark/system with localStorage persistence
+- Framer Motion page transitions and staggered grid animations
+
+### Frontend Patterns
+- Skeleton loading for all data-fetching views
+- Sentiment-colored review cards (green/amber/red borders)
+- Rating badge with color coding: excellent (8+), good (6-8), mixed (4-6), poor (<4)
+- ProConsList aggregates and deduplicates pros/cons from all reviews
+
+## Not Yet Implemented
+- AI-powered sentiment analysis (currently converts star ratings to scores)
+- AI-generated pros/cons extraction (currently template-based from mock data)
+- AI chatbot for product Q&A
+- Global search functionality
+- User authentication
+- Best Buy API integration into routes (client exists but unused)
+- Price/rating range filtering on product list
 
 ## Git / Version Control
 
