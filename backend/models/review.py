@@ -14,6 +14,7 @@ class Review(db.Model):
     source = db.Column(db.String(50), nullable=False)  # amazon, ebay, tiktok, etsy
     text = db.Column(db.Text, nullable=False)
     sentiment_score = db.Column(db.Float)  # -1 to 1
+    source_rating = db.Column(db.Float, nullable=True)  # Original 1-5 star rating from source
     pros = db.Column(db.Text)  # JSON array stored as text
     cons = db.Column(db.Text)  # JSON array stored as text
     scraped_at = db.Column(db.DateTime, default=datetime.utcnow)
