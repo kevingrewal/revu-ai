@@ -116,8 +116,14 @@ def run_migrations():
         try:
             db.session.execute(db.text(sql))
             db.session.commit()
-        except Exception:
-            db.session.rollback()
+        except Exception as e:
+            error_msg = str(e).lower()
+            if 'duplicate column' in error_msg or 'already exists' in error_msg:
+                db.session.rollback()
+            else:
+                print(f"Migration failed: {sql}")
+                print(f"Error: {e}")
+                raise
 
 
 def ensure_categories():
