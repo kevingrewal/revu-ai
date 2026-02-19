@@ -132,6 +132,9 @@ def chat_with_product(product_id):
     if not user_message:
         return jsonify({"error": "message is required"}), 400
 
+    if len(user_message) > 2000:
+        return jsonify({"error": "Message too long (max 2000 characters)"}), 400
+
     raw_history = body.get("history", [])
 
     from services.chat_service import build_system_prompt, cap_history, validate_history

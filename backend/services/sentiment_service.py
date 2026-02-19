@@ -116,7 +116,7 @@ def analyze_reviews_batch(review_texts):
     try:
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=1024,
+            max_tokens=2048,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_prompt}],
             tools=[ANALYSIS_TOOL],
