@@ -6,6 +6,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { CategoryProductsPage } from './pages/CategoryProductsPage';
 import { NotFound } from './pages/NotFound';
+import { SearchPage } from './pages/SearchPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +28,7 @@ function App() {
             <Route path="products/:id" element={<ProductDetailPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="categories/:slug" element={<CategoryProductsPage />} />
+            <Route path="search" element={<SearchPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Star, Menu, X } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { SearchBar } from './SearchBar';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -11,6 +12,8 @@ const navLinks = [
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -47,6 +50,9 @@ export const Header = () => {
               </Link>
             ))}
             <div className="ml-4">
+              <SearchBar key={searchQuery} initialQuery={searchQuery} />
+            </div>
+            <div className="ml-2">
               <ThemeToggle />
             </div>
           </nav>
@@ -67,6 +73,9 @@ export const Header = () => {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <nav className="md:hidden pb-4 border-t border-surface-border dark:border-dark-border pt-4 space-y-1">
+            <div className="px-2 mb-3">
+              <SearchBar key={searchQuery} initialQuery={searchQuery} />
+            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.to}
