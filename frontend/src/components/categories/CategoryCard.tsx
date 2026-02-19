@@ -13,7 +13,7 @@ export const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
     <Card onClick={() => navigate(`/categories/${category.slug}`)}>
       <div className="p-6 text-center">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">
           {category.name}
         </h3>
         <Badge variant="primary">

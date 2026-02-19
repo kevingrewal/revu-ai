@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface CardProps {
   children: ReactNode;
@@ -9,8 +9,10 @@ interface CardProps {
 export const Card = ({ children, className = '', onClick }: CardProps) => {
   return (
     <div
-      className={`bg-white rounded-lg shadow-md overflow-hidden ${
-        onClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
+      className={`bg-white dark:bg-dark-surface rounded-xl border border-surface-border dark:border-dark-border overflow-hidden transition-all duration-200 ${
+        onClick
+          ? 'cursor-pointer hover:-translate-y-1 hover:shadow-xl focus-within:ring-2 focus-within:ring-brand-500'
+          : ''
       } ${className}`}
       onClick={onClick}
     >

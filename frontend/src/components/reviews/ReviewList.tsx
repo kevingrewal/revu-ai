@@ -12,7 +12,7 @@ export const ReviewList = ({ reviews, limit }: ReviewListProps) => {
   if (reviews.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No reviews yet</p>
+        <p className="text-slate-500 dark:text-slate-400">No reviews yet</p>
       </div>
     );
   }
@@ -23,7 +23,7 @@ export const ReviewList = ({ reviews, limit }: ReviewListProps) => {
         <ReviewCard key={review.id} review={review} />
       ))}
       {limit && reviews.length > limit && (
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
           Showing {limit} of {reviews.length} reviews
         </p>
       )}

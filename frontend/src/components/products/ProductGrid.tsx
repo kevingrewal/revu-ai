@@ -1,34 +1,54 @@
+import { motion } from 'framer-motion';
 import type { Product } from '../../types/product';
 import { ProductCard } from './ProductCard';
-import { Spinner } from '../ui/Spinner';
+import { ProductGridSkeleton } from './ProductCardSkeleton';
+import { PackageOpen } from 'lucide-react';
 
 interface ProductGridProps {
   products: Product[];
   isLoading?: boolean;
 }
 
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
 export const ProductGrid = ({ products, isLoading = false }: ProductGridProps) => {
   if (isLoading) {
-    return (
-      <div className="py-12">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <ProductGridSkeleton />;
   }
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">No products found</p>
+      <div className="text-center py-16">
+        <PackageOpen className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+        <p className="text-slate-500 dark:text-slate-400 text-lg">No products found</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <motion.div key={product.id} variants={itemVariants}>
+          <ProductCard product={product} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
