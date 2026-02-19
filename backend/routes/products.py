@@ -69,12 +69,21 @@ def get_products():
 
 @products_bp.route("/<product_id>", methods=["GET"])
 def get_product(product_id):
-    """Get product detail with reviews"""
+    """Get product detail with reviews (fetches from SerpApi on-demand)"""
     try:
         product = Product.query.get(product_id)
 
         if not product:
             return jsonify({"error": "Product not found"}), 404
+
+        # Fetch fresh reviews on-demand for products with Amazon ASINs
+        if product.amazon_asin:
+            try:
+                from services.review_service import fetch_reviews_for_product
+                fetch_reviews_for_product(product)
+            except Exception as e:
+                # Log but don't fail — serve cached data
+                print(f"Review fetch warning for {product_id}: {e}")
 
         # Get product with reviews
         product_data = product.to_dict(include_reviews=True)

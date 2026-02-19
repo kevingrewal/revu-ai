@@ -17,6 +17,9 @@ class Product(db.Model):
     review_count = db.Column(db.Integer, default=0)
     image_url = db.Column(db.String(500))
     source_url = db.Column(db.String(500))
+    bestbuy_sku = db.Column(db.String(50), unique=True, nullable=True, index=True)
+    amazon_asin = db.Column(db.String(20), unique=True, nullable=True, index=True)
+    reviews_fetched_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
