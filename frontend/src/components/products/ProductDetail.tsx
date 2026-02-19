@@ -96,12 +96,7 @@ export const ProductDetail = ({ product }: ProductDetailProps) => {
       </div>
 
       {/* AI Chat */}
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 mb-4">
-          Ask About This Product
-        </h2>
-        <ChatWidget productId={product.id} />
-      </div>
+      <ChatWidget productId={product.id} />
     </div>
   );
 };

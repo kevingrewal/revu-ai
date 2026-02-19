@@ -235,6 +235,7 @@ export const ChatWidget = ({ productId }: ChatWidgetProps) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask about this product..."
+            maxLength={2000}
             rows={1}
             disabled={isStreaming}
             className="flex-1 resize-none rounded-xl border border-surface-border dark:border-dark-border bg-surface-secondary dark:bg-dark-surface-secondary text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all max-h-32 overflow-y-auto"
