@@ -15,7 +15,7 @@ def create_app():
     app.config.from_object(Config)
 
     # Enable CORS
-    CORS(app)
+    CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
     # Initialize database
     init_db(app)
@@ -31,4 +31,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

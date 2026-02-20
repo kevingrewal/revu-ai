@@ -10,7 +10,7 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL", "sqlite:///revu.db"
-    )
+    ).replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Flask
@@ -30,3 +30,6 @@ class Config:
 
     # Anthropic Claude API
     ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
+    # CORS
+    ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
