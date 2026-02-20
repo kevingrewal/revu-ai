@@ -12,7 +12,7 @@ Revu AI is a product review aggregation app that ranks products by AI-driven sen
 - `frontend/` — React 19 + TypeScript, built with Vite 7
 - `backend/` — Python Flask API with CORS enabled
 
-The frontend runs on `localhost:5173`, the backend on `localhost:5000`. API routes are prefixed with `/api/`.
+The frontend runs on `localhost:5173`, the backend on `localhost:5001`. API routes are prefixed with `/api/`.
 
 ## Commands
 
@@ -22,7 +22,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python app.py              # runs dev server on :5000
+python app.py              # runs dev server on :5001
 python sync.py             # sync products from Amazon via SerpApi
 python sync.py --clean     # clear DB and re-sync
 python -c "from seed_data.mock_products import seed_database; from app import app; seed_database(app)"  # seed mock data
@@ -111,7 +111,7 @@ npm run preview            # preview production build
 - `ui/` — Badge, Button, Card, Skeleton, ThemeToggle (reusable primitives)
 
 ### Data Layer
-- **API client** (`config/api.ts`) — Axios instance, base URL from `VITE_API_URL` env or `http://localhost:5000/api`, 10s timeout
+- **API client** (`config/api.ts`) — Axios instance, base URL from `VITE_API_URL` env or `http://localhost:5001/api`, 10s timeout
 - **Hooks** (`hooks/`) — `useProducts(page, limit, category, sort)`, `useProduct(id)`, `useCategories()`, `useTheme()`
 - **Types** (`types/product.ts`) — Review, Product, ProductDetail, Category, ProductListResponse
 - React Query: 5-min stale time, 1 retry, no refetch on window focus
@@ -129,9 +129,6 @@ npm run preview            # preview production build
 - ProConsList aggregates and deduplicates pros/cons from all reviews
 
 ## Not Yet Implemented
-- AI-powered sentiment analysis (currently converts star ratings to scores)
-- AI-generated pros/cons extraction (currently template-based from mock data)
-- AI chatbot for product Q&A
 - Global search functionality
 - User authentication
 - Best Buy API integration into routes (client exists but unused)
