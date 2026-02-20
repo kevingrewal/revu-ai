@@ -111,6 +111,8 @@ def run_migrations():
         "ALTER TABLE products ADD COLUMN amazon_asin VARCHAR(20)",
         "ALTER TABLE products ADD COLUMN reviews_fetched_at DATETIME",
         "ALTER TABLE reviews ADD COLUMN source_rating FLOAT",
+        "ALTER TABLE products ALTER COLUMN name TYPE VARCHAR(500)",
+        "ALTER TABLE products ALTER COLUMN source_url TYPE TEXT",
     ]
     for sql in migrations:
         try:
@@ -198,7 +200,7 @@ def sync_products(limit_per_query=10, clean=False):
                     if not asin:
                         continue
 
-                    title = p.get("title", "").strip()
+                    title = p.get("title", "").strip()[:500]
                     if not title:
                         continue
 
