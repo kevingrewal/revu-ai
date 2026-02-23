@@ -30,7 +30,7 @@ def get_category_products(slug):
             return jsonify({"error": "Category not found"}), 404
 
         # Get products in this category
-        products = Product.query.filter_by(category=slug).order_by(Product.rating.desc()).all()
+        products = Product.query.filter_by(category=slug).order_by(Product.rating.desc().nullslast()).all()
         products_data = [product.to_dict() for product in products]
 
         return jsonify({
@@ -53,7 +53,7 @@ def search_categories():
 
         search_pattern = f"%{search}%"
         categories = Category.query.filter(
-            Category.name.like(search_pattern)
+            Category.name.ilike(search_pattern)
         ).order_by(Category.name).limit(5).all()
 
         return jsonify([cat.to_dict() for cat in categories]), 200

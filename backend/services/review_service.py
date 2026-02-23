@@ -109,7 +109,7 @@ def fetch_reviews_for_product(product):
         avg_sentiment = sum(r.sentiment_score for r in all_reviews) / len(all_reviews)
         product.rating = round(avg_sentiment * 10, 1)
     else:
-        product.rating = 0.0
+        product.rating = None
 
     db.session.commit()
     return True

@@ -15,7 +15,7 @@ export interface Product {
   description: string | null;
   category: string | null;
   price: number;
-  rating: number; // 0-10
+  rating: number | null; // 0-10, null = not yet analyzed
   review_count: number;
   image_url: string | null;
   source_url: string | null;

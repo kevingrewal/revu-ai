@@ -1,11 +1,13 @@
 """
 Sync script to populate products from Amazon via SerpApi.
 Run: python sync.py [--clean] [--limit N]
+     python sync.py --fetch-reviews [--batch N]
 
 Each search query costs 1 SerpApi call (~20 results per call).
 Default config uses ~10 queries = ~10 of your 250 monthly calls.
 """
 import argparse
+import os
 from datetime import datetime
 from app import create_app
 from models.product import Product
@@ -141,7 +143,7 @@ def ensure_categories():
 def convert_amazon_rating(rating):
     """Convert Amazon 1-5 star rating to Revu 0-10 scale"""
     if not rating:
-        return 0.0
+        return None
     return round(float(rating) * 2.0, 1)
 
 
@@ -205,8 +207,8 @@ def sync_products(limit_per_query=10, clean=False):
                         continue
 
                     price = p.get("price")
-                    rating = convert_amazon_rating(p.get("rating"))
                     reviews_count = p.get("reviews_count") or 0
+                    rating = convert_amazon_rating(p.get("rating")) if reviews_count else None
                     image_url = p.get("image", "")
                     link = p.get("link", "")
 
@@ -277,12 +279,81 @@ def sync_products(limit_per_query=10, clean=False):
                 print(f"  {p.rating}/10 - {p.name[:60]} (${float(p.price):.2f})")
 
 
+def fetch_all_reviews(batch_size=50):
+    """Batch-fetch reviews and compute AI ratings for unrated products."""
+    app = create_app()
+
+    with app.app_context():
+        from services.review_service import fetch_reviews_for_product
+
+        # Find products that haven't had reviews fetched yet
+        products = (
+            Product.query
+            .filter(Product.reviews_fetched_at.is_(None))
+            .filter(Product.amazon_asin.isnot(None))
+            .order_by(Product.created_at)
+            .limit(batch_size)
+            .all()
+        )
+
+        remaining = (
+            Product.query
+            .filter(Product.reviews_fetched_at.is_(None))
+            .filter(Product.amazon_asin.isnot(None))
+            .count()
+        )
+
+        if not products:
+            print("No products need review fetching.")
+            return
+
+        print(f"Fetching reviews for {len(products)} products ({remaining} total remaining)\n")
+
+        succeeded = 0
+        failed = 0
+
+        for i, product in enumerate(products, 1):
+            name = product.name[:60]
+            print(f"  [{i}/{len(products)}] {name}...")
+
+            try:
+                fetched = fetch_reviews_for_product(product)
+                if fetched:
+                    print(f"           → {product.review_count} reviews, rating: {product.rating}/10")
+                    succeeded += 1
+                else:
+                    print(f"           → skipped (rate limited or no reviews)")
+                    failed += 1
+            except Exception as e:
+                print(f"           → error: {e}")
+                failed += 1
+
+        # Print summary
+        client = SerpApiClient()
+        usage = client.get_usage_stats()
+
+        print(f"\n{'='*50}")
+        print(f"Review fetch complete!")
+        print(f"  Succeeded: {succeeded}")
+        print(f"  Skipped/failed: {failed}")
+        print(f"  Remaining unrated: {remaining - len(products)}")
+        print(f"\nSerpApi monthly usage: {usage['used']}/{usage['limit']} ({usage['remaining']} remaining)")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sync products from Amazon via SerpApi")
     parser.add_argument("--clean", action="store_true", help="Clear existing data first")
     parser.add_argument("--limit", type=int, default=15, help="Max products per search query (default: 15)")
+    parser.add_argument("--fetch-reviews", action="store_true", help="Batch-fetch reviews for unrated products")
+    parser.add_argument("--batch", type=int,
+                        default=int(os.environ.get("REVIEW_FETCH_BATCH_SIZE", 50)),
+                        help="Max products to process for --fetch-reviews (default: 50, or REVIEW_FETCH_BATCH_SIZE env var)")
     args = parser.parse_args()
 
-    print("Starting Amazon product sync via SerpApi...")
-    sync_products(limit_per_query=args.limit, clean=args.clean)
-    print("\nDone! Run 'python app.py' to start the server.")
+    if args.fetch_reviews:
+        print("Batch-fetching reviews for unrated products...")
+        fetch_all_reviews(batch_size=args.batch)
+    else:
+        print("Starting Amazon product sync via SerpApi...")
+        sync_products(limit_per_query=args.limit, clean=args.clean)
+    print("\nDone!")

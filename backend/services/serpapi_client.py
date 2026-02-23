@@ -85,12 +85,21 @@ class SerpApiClient:
             if not price:
                 price = r.get("extracted_price")
 
+            # Extract review count (SerpApi returns various formats)
+            reviews_field = r.get("reviews")
+            if isinstance(reviews_field, dict):
+                reviews_count = reviews_field.get("total")
+            elif isinstance(reviews_field, (int, float)):
+                reviews_count = int(reviews_field)
+            else:
+                reviews_count = None
+
             products.append({
                 "asin": asin,
                 "title": r.get("title", ""),
                 "price": price,
                 "rating": r.get("rating"),
-                "reviews_count": r.get("reviews", {}).get("total") if isinstance(r.get("reviews"), dict) else None,
+                "reviews_count": reviews_count,
                 "image": r.get("thumbnail", ""),
                 "link": r.get("link", ""),
             })

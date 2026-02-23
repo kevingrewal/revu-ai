@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 import { formatRating, getRatingColor } from '../../utils/formatters';
 
 interface RatingBadgeProps {
-  rating: number;
+  rating: number | null;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -17,6 +17,7 @@ const colorStyles = {
   good: 'bg-rating-good text-white',
   mixed: 'bg-rating-mixed text-white',
   poor: 'bg-rating-poor text-white',
+  neutral: 'bg-gray-400 text-white',
 };
 
 export const RatingBadge = ({ rating, size = 'md' }: RatingBadgeProps) => {

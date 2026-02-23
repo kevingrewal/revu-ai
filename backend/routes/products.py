@@ -38,17 +38,17 @@ def get_products():
             search_pattern = f"%{search}%"
             query = query.filter(
                 db.or_(
-                    Product.name.like(search_pattern),
-                    Product.description.like(search_pattern),
-                    Product.category.like(search_pattern),
+                    Product.name.ilike(search_pattern),
+                    Product.description.ilike(search_pattern),
+                    Product.category.ilike(search_pattern),
                 )
             )
 
-        # Apply sorting
+        # Apply sorting (nullslast ensures unrated products sort to the end)
         if sort == "rating_desc":
-            query = query.order_by(Product.rating.desc())
+            query = query.order_by(Product.rating.desc().nullslast())
         elif sort == "rating_asc":
-            query = query.order_by(Product.rating.asc())
+            query = query.order_by(Product.rating.asc().nullslast())
         elif sort == "price_asc":
             query = query.order_by(Product.price.asc())
         elif sort == "price_desc":
@@ -56,7 +56,7 @@ def get_products():
         elif sort == "newest":
             query = query.order_by(Product.created_at.desc())
         else:
-            query = query.order_by(Product.rating.desc())  # Default
+            query = query.order_by(Product.rating.desc().nullslast())  # Default
 
         # Get total count
         total = query.count()
