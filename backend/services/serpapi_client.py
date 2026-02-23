@@ -48,8 +48,13 @@ class SerpApiClient:
         params["api_key"] = self.api_key
         endpoint = params.get("engine", "unknown")
 
-        response = requests.get(SERPAPI_BASE_URL, params=params, timeout=20)
-        response.raise_for_status()
+        try:
+            response = requests.get(SERPAPI_BASE_URL, params=params, timeout=20)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            # Sanitize API key from error messages before re-raising
+            sanitized_msg = str(e).replace(self.api_key, "***")
+            raise requests.exceptions.HTTPError(sanitized_msg, response=e.response) from None
 
         self._log_usage(endpoint, product_id)
         return response.json()
