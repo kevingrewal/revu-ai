@@ -325,8 +325,13 @@ def fetch_all_reviews(batch_size=50):
                     print(f"           → skipped (rate limited or no reviews)")
                     failed += 1
             except Exception as e:
-                print(f"           → error: {e}")
+                error_msg = str(e)
+                print(f"           → error: {error_msg}")
                 failed += 1
+                # Stop early on rate limiting (429) to avoid wasting iterations
+                if "429" in error_msg or "Too Many Requests" in error_msg:
+                    print(f"\n  ⚠ Rate limited by SerpApi. Stopping early.")
+                    break
 
         # Print summary
         client = SerpApiClient()
