@@ -13,7 +13,7 @@ class Product(db.Model):
     description = db.Column(db.Text)
     category = db.Column(db.String(100), db.ForeignKey("categories.slug"), index=True)
     price = db.Column(db.Numeric(10, 2), nullable=False)
-    rating = db.Column(db.Float, default=0.0, index=True)  # 0-10 scale
+    rating = db.Column(db.Float, nullable=True, default=None, index=True)  # 0-10 scale, None = not yet analyzed
     review_count = db.Column(db.Integer, default=0)
     image_url = db.Column(db.String(500))
     source_url = db.Column(db.Text)
@@ -35,7 +35,7 @@ class Product(db.Model):
             "description": self.description,
             "category": self.category,
             "price": float(self.price) if self.price else 0.0,
-            "rating": round(self.rating, 1) if self.rating else 0.0,
+            "rating": round(self.rating, 1) if self.rating is not None else None,
             "review_count": self.review_count,
             "image_url": self.image_url,
             "source_url": self.source_url,
