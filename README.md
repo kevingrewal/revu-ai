@@ -2,7 +2,7 @@
 
 **AI-powered product review aggregator that ranks products by sentiment analysis across e-commerce platforms.**
 
-[Try it out](https://revu-ai-five.vercel.app/)
+[Live Demo](https://revu-ai-five.vercel.app/) | [Try it out](https://revu-ai-five.vercel.app/)
 
 <p align="center">
   <img src="assets/demo.gif" alt="Revu AI Demo" width="800" />

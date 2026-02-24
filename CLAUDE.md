@@ -25,6 +25,8 @@ pip install -r requirements.txt
 python app.py              # runs dev server on :5001
 python sync.py             # sync products from Amazon via SerpApi
 python sync.py --clean     # clear DB and re-sync
+python sync.py --fetch-reviews          # batch-fetch reviews + AI ratings for unrated products (default: 50)
+python sync.py --fetch-reviews --batch 200  # fetch up to 200 products
 python -c "from seed_data.mock_products import seed_database; from app import app; seed_database(app)"  # seed mock data
 ```
 
@@ -50,9 +52,10 @@ npm run preview            # preview production build
 - `SERPAPI_API_KEY` — Required for product sync and review fetching (250 free searches/month)
 - `SERPAPI_MONTHLY_LIMIT` — Monthly API call budget (default: 250)
 - `REVIEW_CACHE_DAYS` — Days before re-fetching reviews (default: 7)
+- `REVIEW_FETCH_BATCH_SIZE` — Default batch size for `sync.py --fetch-reviews` (default: 50)
 
 ### Database Models (`backend/models/`)
-- **Product** — id (UUID), name, description, category (FK→Category.slug), price, rating (0-10), review_count, image_url, source_url, bestbuy_sku, amazon_asin, reviews_fetched_at
+- **Product** — id (UUID), name, description, category (FK→Category.slug), price, rating (0-10, nullable — `None` = not yet analyzed), review_count, image_url, source_url, bestbuy_sku, amazon_asin, reviews_fetched_at
 - **Review** — id (UUID), product_id (FK→Product.id), source, text, sentiment_score (-1 to 1), source_rating (1-5 stars), pros/cons (JSON stored as text)
 - **Category** — id (UUID), name, slug, product_count
 - **ApiUsage** — id (UUID), api_name, endpoint, product_id, called_at (tracks external API calls for rate limiting)
@@ -78,7 +81,7 @@ npm run preview            # preview production build
 - **Review Service** (`review_service.py`) — Orchestrates review fetching with caching. Checks cache freshness, finds ASIN if missing, fetches/stores reviews, updates product counts
 
 ### Data Pipeline
-- `sync.py` — CLI script that populates the DB with products from Amazon via SerpApi. Searches 8 categories with predefined queries, upserts by amazon_asin, converts Amazon 1-5 ratings to 0-10 scale
+- `sync.py` — CLI script that populates the DB with products from Amazon via SerpApi. Searches 8 categories with predefined queries, upserts by amazon_asin, converts Amazon 1-5 ratings to 0-10 scale. Also supports `--fetch-reviews` for batch review fetching + AI sentiment analysis (scheduled monthly via Render cron)
 - `seed_data/mock_products.py` — Generates 80 mock products (10 per category) with ~700 reviews for development without API calls
 
 ### Backend Patterns
@@ -129,7 +132,6 @@ npm run preview            # preview production build
 - ProConsList aggregates and deduplicates pros/cons from all reviews
 
 ## Not Yet Implemented
-- Global search functionality
 - User authentication
 - Best Buy API integration into routes (client exists but unused)
 - Price/rating range filtering on product list
